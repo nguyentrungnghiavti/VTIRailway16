@@ -1,0 +1,86 @@
+DROP DATABASE IF EXISTS TestingSystem;
+CREATE DATABASE TestingSystem;
+USE TestingSystem;
+CREATE TABLE IF NOT EXISTS Department(
+	DepartmentID  TINYINT UNSIGNED AUTO_INCREMENT PRIMARY key,
+	DepartmentName NVARCHAR(50) NOT NULL 
+    );
+CREATE TABLE IF NOT EXISTS t_position(
+	PositionID  TINYINT UNSIGNED AUTO_INCREMENT PRIMARY key,
+    PositionName ENUM('Dev','Test','Scrum Master','PM') not null
+    );
+CREATE TABLE IF NOT EXISTS T_account(
+	AccountID TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Email   VARCHAR(100) NOT NULL UNIQUE KEY,
+    Username VARCHAR(100) NOT NULL UNIQUE KEY,
+	FullName NVARCHAR(100) NOT NULL,
+	DepartmentID TINYINT UNSIGNED NOT NULL,
+	PositionID   TINYINT  UNSIGNED NOT NULL,
+    CreateDate DATETIME DEFAULT NOW(),
+    FOREIGN KEY(DepartmentID)REFERENCES Department(departmentID),
+    FOREIGN KEY(PositionID)REFERENCES t_position(PositionID)
+    );
+CREATE TABLE IF NOT EXISTS  t_group(
+	GroupID TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    GroupName VARCHAR(100) NOT NULL,
+    CreatorID TINYINT UNSIGNED NOT NULL,
+    CreateDate DATETIME DEFAULT NOW(),
+    FOREIGN KEY(CreatorID) REFERENCES T_account(accountID)
+    );
+CREATE TABLE IF NOT EXISTS GroupAccount(
+	groupID TINYINT UNSIGNED NOT NULL ,
+    accountID TINYINT UNSIGNED NOT NULL,
+    JoinDate DATETIME DEFAULT NOW(),
+    PRIMARY KEY (groupID,accountID),
+    FOREIGN KEY(groupID)REFERENCES t_group(groupID),
+    FOREIGN KEY(accountID)REFERENCES t_account(accountID)
+    );
+CREATE TABLE IF NOT EXISTS Typequestion(
+	TypeID  TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    TypeName ENUM('Essay','Multiple-Choice') NOT NULL UNIQUE KEY
+    );
+CREATE TABLE IF NOT EXISTS CategoryQuestion(
+	CategoryID  TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY ,                                                                                                            
+    CategoryName NVARCHAR(100) NOT NULL UNIQUE KEY
+    );
+CREATE TABLE IF NOT EXISTS Question(
+	QuestionID 			TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Content 			NVARCHAR(200) NOT NULL UNIQUE KEY,
+    CategoryID 			TINYINT UNSIGNED NOT NULL,
+    TypeID  			TINYINT UNSIGNED NOT NULL,
+    CreatorID 			TINYINT UNSIGNED  NOT NULL,
+    CreateDate 			DATETIME DEFAULT NOW(),
+    FOREIGN KEY(CategoryID) REFERENCES CategoryQuestion(CategoryID),
+    FOREIGN KEY(TypeID) REFERENCES Typequestion(TypeID),
+    FOREIGN KEY(CreatorID) REFERENCES t_account(accountID)
+    );
+CREATE TABLE IF NOT EXISTS Answer(
+	AnswerID TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Content VARCHAR(255) NOT NULL UNIQUE KEY,
+    QuestionID  TINYINT UNSIGNED NOT NULL,
+    isCorrect BIT DEFAULT 1,
+    FOREIGN KEY(QuestionID) REFERENCES Question(QuestionID)
+    );
+CREATE TABLE IF NOT EXISTS Exam(
+	ExamID TINYINT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    ExamCode  CHAR(10) NOT NULL,
+    title NVARCHAR(50) NOT NULL,
+    CategoryID TINYINT UNSIGNED NOT NULL,
+    Duration  TINYINT UNSIGNED NOT NULL,
+    CreatorID TINYINT UNSIGNED NOT NULL,
+    CreateDate DATETIME DEFAULT NOW(),
+    FOREIGN KEY(CategoryID) REFERENCES CategoryQuestion(CategoryID),
+    FOREIGN KEY(CreatorID) REFERENCES t_account(AccountID)
+    );
+    
+CREATE TABLE IF NOT EXISTS ExamQuestion(
+	ExamID TINYINT UNSIGNED NOT NULL,
+    QuestionID TINYINT UNSIGNED NOT NULL,
+    FOREIGN KEY(ExamID) REFERENCES Exam(ExamID),
+    FOREIGN KEY(QuestionID) REFERENCES Question(QuestionID),
+    PRIMARY KEY (ExamID,QuestionID)
+    );
+
+    
+    
+    
