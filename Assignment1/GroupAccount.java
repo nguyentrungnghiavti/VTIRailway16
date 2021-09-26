@@ -4,6 +4,6 @@ import java.util.Date;
 
 public class GroupAccount {
 	int id;
-    int accountID;
+    Account accountID;
     Date joinDate;
 }

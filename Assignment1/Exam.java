@@ -8,7 +8,7 @@ public class Exam {
 	    String title;
 	    int categoryID;
 	    int duration;
-	    int creatorID;
+	    Account creatorID;
 	    Date createdDate;
 		
 
